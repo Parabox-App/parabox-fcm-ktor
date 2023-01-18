@@ -38,4 +38,9 @@ dependencies {
     implementation("io.insert-koin:koin-core:$koin_version")
     implementation("io.insert-koin:koin-ktor:$koin_version")
     implementation("io.insert-koin:koin-logger-slf4j:$koin_version")
+    implementation("org.igniterealtime.smack:smack-java7:4.3.4")
+    implementation("org.igniterealtime.smack:smack-tcp:4.3.4")
+    implementation("org.igniterealtime.smack:smack-extensions:4.3.4")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.11.0")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.11.0")
 }
