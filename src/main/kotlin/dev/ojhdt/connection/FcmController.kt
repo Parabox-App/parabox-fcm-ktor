@@ -1,11 +1,12 @@
 package dev.ojhdt.connection
 
-import com.wedevol.xmpp.EntryPoint
+import com.google.gson.Gson
 import com.wedevol.xmpp.bean.CcsInMessage
 import com.wedevol.xmpp.bean.CcsOutMessage
 import com.wedevol.xmpp.server.CcsClient
 import com.wedevol.xmpp.util.MessageMapper
 import com.wedevol.xmpp.util.Util
+import dev.ojhdt.data.model.UpstreamMessage
 import org.jivesoftware.smack.SmackException
 import org.jivesoftware.smack.XMPPException
 import org.slf4j.LoggerFactory
@@ -19,7 +20,7 @@ const val SENDER_ID = ""
 const val SERVER_KEY = ""
 
 
-class FcmController: CcsClient(SENDER_ID, SERVER_KEY, true) {
+class FcmController(val onUpstreamMessage: (msg: UpstreamMessage) -> Unit): CcsClient(SENDER_ID, SERVER_KEY, true) {
     private val logger = LoggerFactory.getLogger(FcmController::class.java)
     init{
         try {
@@ -39,37 +40,38 @@ class FcmController: CcsClient(SENDER_ID, SERVER_KEY, true) {
         }
     }
 
-    fun sendMessage(registrationToken: String, type: String, json: String){
+    fun sendMessage(registrationToken: String, wsSessionId: String, type: String, json: String){
         val messageId = Util.getUniqueMessageId();
         val dataPayload = mapOf<String, String>(
-            Util.PAYLOAD_ATTRIBUTE_MESSAGE to json
+            "ws_session_id" to wsSessionId,
+            "type" to type,
+            "dto" to json
         )
         val message = CcsOutMessage(registrationToken, messageId, dataPayload)
         val jsonRequest = MessageMapper.toJsonString(message)
         sendDownstreamMessage(messageId, jsonRequest)
-        try {
-            val latch = CountDownLatch(1)
-            latch.await()
-        } catch (e: InterruptedException) {
-            logger.error("An error occurred while latch was waiting. Error: {}", e.message)
-        }
+//        try {
+//            val latch = CountDownLatch(1)
+//            latch.await()
+//        } catch (e: InterruptedException) {
+//            logger.error("An error occurred while latch was waiting. Error: {}", e.message)
+//        }
     }
 
     override fun handleUpstreamMessage(inMessage: CcsInMessage?) {
-        // The custom 'action' payload attribute defines what the message action is about.
-
-        // The custom 'action' payload attribute defines what the message action is about.
-        val actionObj = Optional.ofNullable(inMessage!!.dataPayload[Util.PAYLOAD_ATTRIBUTE_ACTION])
-        check(actionObj.isPresent) { "Action must not be null! Options: 'ECHO', 'MESSAGE'" }
-        val action = actionObj.get()
-
-        // 1. send ACK to FCM
-
         // 1. send ACK to FCM
         val ackJsonRequest = MessageMapper.createJsonAck(inMessage!!.from, inMessage!!.messageId)
         sendAck(ackJsonRequest)
 
         // 2. process and send message
         logger.info("Received message from FCM: {}", inMessage!!.dataPayload)
+        logger.info("session_id: {}", inMessage!!.dataPayload["session_id"])
+        logger.info("message: {}", inMessage!!.dataPayload["message"])
+        onUpstreamMessage(
+            UpstreamMessage(
+                session_id = inMessage!!.dataPayload.get("session_id")!!,
+                message = inMessage!!.dataPayload.get("message")!!,
+            )
+        )
     }
 }

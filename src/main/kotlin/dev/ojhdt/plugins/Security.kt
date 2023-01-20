@@ -15,7 +15,7 @@ fun Application.configureSecurity() {
     }
 
     intercept(Plugins) {
-        if(call.sessions.get<MySession>() == null){
+        if (call.sessions.get<MySession>() == null) {
             call.sessions.set(MySession(generateNonce()))
         }
     }

@@ -413,7 +413,7 @@ public class CcsClient implements StanzaListener, ReconnectionListener, Connecti
     /**
      * Called when a custom packet has been received by the server. By default this method just resends the packet.
      */
-    private void handlePacketRecieved(CcsInMessage inMessage) {
+    public void handlePacketRecieved(CcsInMessage inMessage) {
         final String messageId = Util.getUniqueMessageId();
         // TODO: it should be the user id to be retrieved from the data base
         final String to = inMessage.getDataPayload().get(Util.PAYLOAD_ATTRIBUTE_RECIPIENT);

@@ -8,6 +8,7 @@ plugins {
     kotlin("jvm") version "1.8.0"
     id("io.ktor.plugin") version "2.2.2"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.0"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 group = "dev.ojhdt"
@@ -32,6 +33,7 @@ dependencies {
     implementation("io.ktor:ktor-server-websockets-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
+    implementation("io.ktor:ktor-client-logging:$ktor_version")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     implementation("com.google.firebase:firebase-admin:$firebase_version")
@@ -43,4 +45,7 @@ dependencies {
     implementation("org.igniterealtime.smack:smack-extensions:4.3.4")
     implementation("com.fasterxml.jackson.core:jackson-core:2.11.0")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.11.0")
+    implementation("org.slf4j:slf4j-api:2.0.6")
+    implementation("org.slf4j:slf4j-simple:2.0.6")
+    implementation("com.google.code.gson:gson:2.10.1")
 }
