@@ -1,7 +1,6 @@
 package dev.ojhdt.connection
 
 import com.google.gson.Gson
-import dev.ojhdt.data.model.User
 import dev.ojhdt.exception.UserAlreadyExistsException
 import io.ktor.websocket.*
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -15,11 +14,12 @@ class ConnectionController() {
     private val connections = ConcurrentHashMap<String, WebSocketSession>()
 
     @OptIn(DelicateCoroutinesApi::class)
-    val fcmController: FcmController = FcmController() {
+    val xmppController: XmppController = XmppController() {
         GlobalScope.launch {
             sendToWS(it.session_id, it.message)
         }
     }
+    val fcmController: FcmController = FcmController()
 
     fun onConnect(sessionId: String, session: WebSocketSession) {
         if (connections.containsKey(sessionId)) {
@@ -48,6 +48,7 @@ class ConnectionController() {
     }
 
     fun sendToFCM(registrationToken: String, wsSessionId: String, type: String, json: String) {
+//        xmppController.sendMessage(registrationToken, wsSessionId, type, json)
         fcmController.sendMessage(registrationToken, wsSessionId, type, json)
     }
 }

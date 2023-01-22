@@ -282,7 +282,7 @@ public class CcsClient implements StanzaListener, ReconnectionListener, Connecti
     /**
      * Handles an ACK message from FCM
      */
-    private void handleAckReceipt(Map<String, Object> jsonMap) {
+    public void handleAckReceipt(Map<String, Object> jsonMap) {
         removeMessageFromSyncMessages(jsonMap);
     }
 
